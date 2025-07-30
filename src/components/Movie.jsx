@@ -83,7 +83,7 @@ const MovieWebsite = () => {
     };
 
     fetchMovieData();
-  }, []);
+  }, );
 
   
   useEffect(() => {
