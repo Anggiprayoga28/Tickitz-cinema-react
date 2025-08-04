@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
 
 const TickitzRegister = () => {
   const [formData, setFormData] = useState({
@@ -8,6 +9,7 @@ const TickitzRegister = () => {
     terms: false
   });
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -19,52 +21,51 @@ const TickitzRegister = () => {
 
   function handleSubmit(e) {
     e.preventDefault();
+    
     if (!formData.terms) {
       alert('Please agree to terms & conditions');
+      return;
+    }
+
+    if (formData.email === null || formData.email === '') {
+      alert('Email is required');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      alert('Please enter a valid email address');
+      return;
+    }
+
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*/<>]).{8,}$/;
+    if (passwordRegex.test(formData.password)) {
+      console.log('Form submitted:', formData);
+      alert('Registrasi berhasil!');
+      navigate('/login'); // Navigate to login page
     } else {
-      if (formData.email === null || formData.email === '') {
-        alert('Email is required');
-      }else {
-
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.email)) {
-        alert('Please enter a valid email address');
-      } else {
-        console.log('Form submitted:', formData);
-        // alert('Registration successful!');
-      }
-        }
-      }
-
-      const passwordRegex = /^(?=.*[a-z])(?=.+[A-Z])(?=.+[!@#$%^&*/><]).{8,}$/;
-      if (!passwordRegex.test(formData.password)) {
-        alert('Enter at least one number, one capital letter, one symbol, and at least 8 characters');
-      }else {
-        console.log('Form submitted:', formData);
-        alert('Registration successful!');
-      }
-    
+      alert('Password must contain at least 8 characters, including uppercase, lowercase, and special characters');
+    }
   }
 
   return (
-    <div className=" w-screen h-screen bg-cover bg-center relative" 
+    <div className="w-screen h-screen bg-cover bg-center relative" 
          style={{ backgroundImage: 'url(../../public/background.svg)' }}>
       
-      {/* Blue section */}
-      <div className="w-screen "></div>
-      
       {/* Main container */}
-      <div className="relative -mt-32 flex flex-col items-center justify-center px-5">
+      <div className="relative flex flex-col items-center justify-center px-5 pt-20">
         {/* Logo */}
         <div className="mb-5">
-          <img 
-            src="../../public/logo-tickitz.png" 
-            alt="Logo Tickitz" 
-            className="w-64 h-auto"
-          />
+          <Link to="/">
+            <img 
+              src="../../public/logo-tickitz.png" 
+              alt="Logo Tickitz" 
+              className="w-64 h-auto"
+            />
+          </Link>
         </div>
         
-        {/* Login container */}
+        {/* Registration container */}
         <div className="bg-white backdrop-blur-sm rounded-3xl p-3 shadow-2xl relative max-w-md w-full">
           <div className="bg-white rounded-xl p-8 relative z-10">
             
@@ -143,21 +144,20 @@ const TickitzRegister = () => {
               
               {/* Submit button */}
               <button
-                onClick={handleSubmit}
-                className="w-full py-4 bg-blue-600 text-black font-medium rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                type="submit"
+                className="w-full py-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 Join For Free Now
               </button>
               
-
               {/* Login link */}
               <div className="text-center">
-                <a 
-                  href="/index/login.html" 
+                <Link 
+                  to="/login" 
                   className="text-blue-500 text-sm hover:text-blue-600 transition-colors"
                 >
                   Already have an account?
-                </a>
+                </Link>
               </div>
               
               {/* Social buttons */}
@@ -192,6 +192,5 @@ const TickitzRegister = () => {
     </div>
   );
 };
-
 
 export default TickitzRegister;
