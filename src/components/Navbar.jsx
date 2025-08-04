@@ -1,54 +1,79 @@
-import React, { useState } from 'react';
-import { Menu, Router, X } from 'lucide-react';
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { Menu, X } from "lucide-react";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
+
+  // Function to check if link is active
+  const isActive = (path) => {
+    if (path === "/" && location.pathname === "/") return true;
+    if (path !== "/" && location.pathname.startsWith(path)) return true;
+    return false;
+  };
+
+  // Close mobile menu when link is clicked
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
 
   return (
     <>
       {/* Main Navbar */}
       <nav className="flex justify-between items-center py-5 px-[5%] border-b border-gray-200 sticky top-0 z-50 bg-white">
         <div className="flex-1 max-w-[130px]">
-          <a href="/index.html" className="block">
+          <Link to="/" className="block">
             <img src="/tickitz-blu.svg" alt="Tickitz Logo" />
-          </a>
+          </Link>
         </div>
 
         {/* Desktop Navigation */}
-        <div className="flex-[4] hidden md:flex justify-center">
-          <ul className="flex list-none gap-10">
-            <li>
-              <a href="/index.html" className="text-gray-900 font-normal text-sm leading-5 hover:text-blue-600 relative after:content-[''] after:absolute after:w-0 after:h-0.5 after:-bottom-1 after:left-0 after:bg-blue-600 after:transition-all after:duration-300 hover:after:w-full">
-                Home
-              </a>
-            </li>
-            <li>
-              <a href="/index/movie.html" className="text-gray-900 font-normal text-sm leading-5 hover:text-blue-600 relative after:content-[''] after:absolute after:w-0 after:h-0.5 after:-bottom-1 after:left-0 after:bg-blue-600 after:transition-all after:duration-300 hover:after:w-full">
-                Movie
-              </a>
-            </li>
-            <li>
-              <a href="/index/detail.html" className="text-gray-900 font-normal text-sm leading-5 hover:text-blue-600 relative after:content-[''] after:absolute after:w-0 after:h-0.5 after:-bottom-1 after:left-0 after:bg-blue-600 after:transition-all after:duration-300 hover:after:w-full">
-                Buy Ticket
-              </a>
-            </li>
-          </ul>
-        </div>
+        <Link
+          to="/"
+          className="text-slate-800 font-normal text-sm hover:text-blue-600 relative group"
+        >
+          Home
+          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+        </Link>
+
+        <Link
+          to="/movies"
+          className="text-slate-800 font-normal text-sm hover:text-blue-600 relative group"
+        >
+          Movie
+          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+        </Link>
+
+        <Link
+          to="/order"
+          className="text-slate-800 font-normal text-sm hover:text-blue-600 relative group"
+        >
+          Buy Ticket
+          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+        </Link>
 
         {/* Desktop Auth Buttons */}
         <div className="flex-1 hidden md:flex justify-end gap-3">
-          <a href="/index/login.html" className="px-4 py-3 border border-blue-600 bg-transparent text-blue-600 text-sm font-normal tracking-wide rounded hover:bg-blue-600 hover:bg-opacity-10 transition-colors">
+          <Link
+            to="/login"
+            className="px-4 py-3 border border-blue-600 bg-transparent text-blue-600 text-sm font-normal tracking-wide rounded hover:bg-blue-600 hover:bg-opacity-10 transition-colors"
+          >
             Sign in
-          </a>
-          <a href="/index/register.html" className="px-4 py-3 bg-blue-600 text-gray-50 text-sm font-normal tracking-wide border border-blue-600 rounded hover:bg-blue-700 transition-colors">
+          </Link>
+          <Link
+            to="/register"
+            className="px-4 py-3 bg-blue-600 text-gray-50 text-sm font-normal tracking-wide border border-blue-600 rounded hover:bg-blue-700 transition-colors"
+          >
             Sign Up
-          </a>
+          </Link>
         </div>
 
         {/* Mobile Menu Button */}
         <button
           className="md:hidden"
           onClick={() => setIsMobileMenuOpen(true)}
+          aria-label="Open mobile menu"
         >
           <Menu size={24} />
         </button>
@@ -58,28 +83,60 @@ const Navbar = () => {
       {isMobileMenuOpen && (
         <div className="fixed inset-0 bg-white z-[2000] p-5 flex flex-col">
           <div className="flex justify-between items-center mb-8">
-            <a href="/index.html" className="block">
+            <Link to="/" className="block" onClick={closeMobileMenu}>
               <img src="/tickitz-blu.svg" alt="Tickitz Logo" />
-            </a>
-            
-            <button onClick={() => setIsMobileMenuOpen(false)}>
+            </Link>
+
+            <button onClick={closeMobileMenu} aria-label="Close mobile menu">
               <X size={24} />
             </button>
           </div>
-          
+
           <div className="flex flex-col gap-5">
-            <a href="/index.html" className="text-lg text-gray-900 py-2 border-b border-gray-100">Home</a>
-            <a href="/index/movie.html" className="text-lg text-gray-900 py-2 border-b border-gray-100">Movie</a>
-            <a href="/index/detail.html" className="text-lg text-gray-900 py-2 border-b border-gray-100">Buy Ticket</a>
+            <Link
+              to="/"
+              className={`text-lg py-2 border-b border-gray-100 ${
+                isActive("/") ? "text-blue-600" : "text-gray-900"
+              }`}
+              onClick={closeMobileMenu}
+            >
+              Home
+            </Link>
+            <Link
+              to="/movies"
+              className={`text-lg py-2 border-b border-gray-100 ${
+                isActive("/movies") ? "text-blue-600" : "text-gray-900"
+              }`}
+              onClick={closeMobileMenu}
+            >
+              Movie
+            </Link>
+            <Link
+              to="/movies"
+              className={`text-lg py-2 border-b border-gray-100 ${
+                isActive("/order") ? "text-blue-600" : "text-gray-900"
+              }`}
+              onClick={closeMobileMenu}
+            >
+              Buy Ticket
+            </Link>
           </div>
-          
+
           <div className="flex flex-col gap-4 mt-8">
-            <a href="/index/login.html" className="px-4 py-3 border border-blue-600 bg-transparent text-blue-600 text-sm font-normal tracking-wide rounded text-center">
+            <Link
+              to="/login"
+              className="px-4 py-3 border border-blue-600 bg-transparent text-blue-600 text-sm font-normal tracking-wide rounded text-center"
+              onClick={closeMobileMenu}
+            >
               Sign in
-            </a>
-            <a href="/index/register.html" className="px-4 py-3 bg-blue-600 text-gray-50 text-sm font-normal tracking-wide border border-blue-600 rounded text-center">
+            </Link>
+            <Link
+              to="/register"
+              className="px-4 py-3 bg-blue-600 text-gray-50 text-sm font-normal tracking-wide border border-blue-600 rounded text-center"
+              onClick={closeMobileMenu}
+            >
               Sign Up
-            </a>
+            </Link>
           </div>
         </div>
       )}
