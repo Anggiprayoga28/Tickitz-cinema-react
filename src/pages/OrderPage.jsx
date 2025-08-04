@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import MainLayout from '../layouts/MainLayout';
+import { useNavigate } from 'react-router-dom';
+
 
 const OrderPage = () => {
   const [selectedSeats, setSelectedSeats] = useState(['C4', 'C5', 'C6']);
+  const navigate = useNavigate();
   
   // Define seat layout with their statuses
   const seatRows = [
@@ -97,7 +100,6 @@ const OrderPage = () => {
   const totalPrice = selectedSeats.length * ticketPrice;
 
   return (
-    <MainLayout>
     <div className="min-h-screen bg-gray-50 py-8">
       {/* Progress Bar */}
       <div className="flex items-center justify-center mb-10">
@@ -242,15 +244,17 @@ const OrderPage = () => {
                 </div>
               </div>
 
-              <button className="w-full bg-blue-500 text-white py-4 rounded-lg font-bold text-lg hover:bg-blue-600 transition-colors mt-5">
-                Checkout now
-              </button>
+          <button 
+            onClick={() => navigate('/payment')}
+            className="w-full bg-blue-500 text-white py-4 rounded-lg font-bold text-lg hover:bg-blue-600 transition-colors mt-5"
+            >
+           Checkout now
+          </button>
             </div>
           </div>
         </div>
       </div>
     </div>
-    </MainLayout>
   );
 };
 
