@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
 
 const TickitzLogin = () => {
   const [formData, setFormData] = useState({
@@ -8,6 +9,7 @@ const TickitzLogin = () => {
     terms: false
   });
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -19,28 +21,25 @@ const TickitzLogin = () => {
 
   function handleSubmit(e) {
     e.preventDefault();
-      if (formData.email === null || formData.email === '') {
-        alert('Email is required');
-      }else {
+    if (formData.email === null || formData.email === '') {
+      alert('Email is required');
+      return;
+    }
 
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.email)) {
-        alert('Please enter a valid email address');
-      } else {
-        console.log('Form submitted:', formData);
-        // alert('Registration successful!');
-      }
-        }
-      
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      alert('Please enter a valid email address');
+      return;
+    }
 
-      const passwordRegex = /^(?=.*[a-z])(?=.+[A-Z])(?=.+[!@#$%^&*/><]).{8,}$/;
-      if (!passwordRegex.test(formData.password)) {
-        alert('Enter at least one number, one capital letter, one symbol, and at least 8 characters');
-      }else {
-        console.log('Form submitted:', formData);
-        alert('Registration successful!');
-      }
-    
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*/<>]).{8,}$/;
+    if (passwordRegex.test(formData.password)) {
+      console.log('Form submitted:', formData);
+      alert('Login berhasil!');
+      navigate('/'); // Navigate to homepage
+    } else {
+      alert('Password must contain at least 8 characters, including uppercase, lowercase, and special characters');
+    }
   }
 
   return (
@@ -48,16 +47,15 @@ const TickitzLogin = () => {
       backgroundImage: 'url(../../public/background.svg)',
       backgroundSize: 'cover'
     }}>
-
       <div className="flex flex-col items-center justify-center px-5 pt-20">
         {/* Logo */}
         <div className="mb-6 z-50">
-          <img src="../../public/logo-tickitz.png" alt="Logo Tickitz" />
+          <Link to="/">
+            <img src="../../public/logo-tickitz.png" alt="Logo Tickitz" />
+          </Link>
         </div>
 
-        
         <div className="bg-white backdrop-blur-md rounded-3xl p-8 shadow-2xl max-w-md w-full">
-         
           <h1 className="text-3xl text-gray-800 mb-2 font-semibold">
             Welcome Back
             <span className="ml-2 text-3xl">👋</span>
@@ -68,51 +66,49 @@ const TickitzLogin = () => {
             your registration
           </p>
           
-           
-        <form className="space-y-5" onSubmit={handleSubmit}>
-              {/* Email field */}
-              <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Email
-                </label>
+          <form className="space-y-5" onSubmit={handleSubmit}>
+            {/* Email field */}
+            <div>
+              <label className="block mb-2 text-sm font-medium text-gray-700">
+                Email
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                placeholder="Enter your email"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
+                required
+              />
+            </div>
+            
+            {/* Password field */}
+            <div className="relative">
+              <label className="block mb-2 text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <div className="relative">
                 <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
                   onChange={handleInputChange}
-                  placeholder="Enter your email"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
+                  placeholder="Password"
+                  className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
                   required
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-blue-500 transition-colors"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
-              
-              {/* Password field */}
-              <div className="relative">
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Password
-                </label>
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    placeholder="Password"
-                    className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-blue-500 transition-colors"
-                  >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
-              </div>
+            </div>
 
-          <div className="space-y-6">
-          
+            <div className="space-y-6">
               <div className="text-right mt-3">
                 <button
                   type="button"
@@ -124,22 +120,19 @@ const TickitzLogin = () => {
               </div>
             </div>
             
-            
             <button
-              onClick={handleSubmit}
-              className="w-full py-4 bg-blue-500 text-black border-none rounded-xl text-base font-semibold cursor-pointer transition-all duration-300 my-2 shadow-lg shadow-blue-200 hover:bg-blue-600 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-300 active:translate-y-0"
+              type="submit"
+              className="w-full py-4 bg-blue-500 text-white border-none rounded-xl text-base font-semibold cursor-pointer transition-all duration-300 my-2 shadow-lg shadow-blue-200 hover:bg-blue-600 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-300 active:translate-y-0"
             >
               Login
             </button>
-      </form>
+          </form>
           
-         
           <div className="flex items-center my-8 text-gray-600 text-sm">
             <div className="flex-1 h-px bg-gray-200"></div>
             <span className="mx-5">or</span>
             <div className="flex-1 h-px bg-gray-200"></div>
           </div>
-          
           
           <div className="flex gap-4">
             <button
@@ -163,6 +156,19 @@ const TickitzLogin = () => {
               </svg>
               Facebook
             </button>
+          </div>
+
+          {/* Register link */}
+          <div className="text-center mt-6">
+            <p className="text-gray-600 text-sm">
+              Don't have an account?{' '}
+              <Link 
+                to="/register" 
+                className="text-blue-500 hover:text-blue-700 transition-colors"
+              >
+                Sign up here
+              </Link>
+            </p>
           </div>
         </div>
       </div>
