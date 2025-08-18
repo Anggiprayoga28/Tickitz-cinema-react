@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Search, Menu, X, MapPin, User } from 'lucide-react';
-// import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const MainLayout = ({ children }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
