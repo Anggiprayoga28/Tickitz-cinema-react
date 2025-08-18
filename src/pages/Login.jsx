@@ -1,57 +1,90 @@
-import { useState } from 'react';
+// Login.jsx
+import { useState, useEffect } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { ToastContainer, toast } from 'react-toastify';
+
 
 const TickitzLogin = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    terms: false
   });
   const [showPassword, setShowPassword] = useState(false);
+  
   const navigate = useNavigate();
+  
+  const { error, loading, isAuthenticated, loginUser, clearError } = useAuth();
+
+
+    if (isAuthenticated) {
+      navigate('/');
+    }
+
+
+  // useEffect(() => {
+  //   return () => {
+  //     clearError();
+  //   };
+  // }, [clearError]);
 
   const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: value
     }));
+    
+    if (error) {
+      clearError();
+    }
   };
 
-  function handleSubmit(e) {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (formData.email === null || formData.email === '') {
-      alert('Email is required');
+    
+    if (!formData.email.trim()) {
+      toast('Email is required');
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      alert('Please enter a valid email address');
+      toast('Please enter a valid email address');
       return;
     }
 
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*/<>]).{8,}$/;
-    if (passwordRegex.test(formData.password)) {
-      console.log('Form submitted:', formData);
-      alert('Login berhasil!');
-      navigate('/'); // Navigate to homepage
-    } else {
-      alert('Password must contain at least 8 characters, including uppercase, lowercase, and special characters');
+    if (!formData.password.trim()) {
+      toast('Password is required');
+      return;
     }
-  }
+
+    loginUser({
+      email: formData.email.trim(),
+      password: formData.password
+    });
+  };
+
+  // useEffect(() => {
+    if (isAuthenticated && !error) {
+      toast('Login berhasil!');
+      navigate('/');
+    }
+  // }, [isAuthenticated, error, navigate]);
 
   return (
     <div className="min-h-screen w-screen" style={{
-      backgroundImage: 'url(../../public/background.svg)',
+      backgroundImage: 'url(/background.svg)',
       backgroundSize: 'cover'
     }}>
+      <ToastContainer />
+
       <div className="flex flex-col items-center justify-center px-5 pt-20">
         {/* Logo */}
         <div className="mb-6 z-50">
           <Link to="/">
-            <img src="../../public/logo-tickitz.png" alt="Logo Tickitz" />
+            <img src="/logo-tickitz.png" alt="Logo Tickitz" />
           </Link>
         </div>
 
@@ -65,6 +98,13 @@ const TickitzLogin = () => {
             Sign in with your data that you entered during<br />
             your registration
           </p>
+
+          {/* Error Message */}
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+              {error}
+            </div>
+          )}
           
           <form className="space-y-5" onSubmit={handleSubmit}>
             {/* Email field */}
@@ -79,7 +119,7 @@ const TickitzLogin = () => {
                 onChange={handleInputChange}
                 placeholder="Enter your email"
                 className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
-                required
+                disabled={loading}
               />
             </div>
             
@@ -96,12 +136,13 @@ const TickitzLogin = () => {
                   onChange={handleInputChange}
                   placeholder="Password"
                   className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
-                  required
+                  disabled={loading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-blue-500 transition-colors"
+                  disabled={loading}
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -110,21 +151,21 @@ const TickitzLogin = () => {
 
             <div className="space-y-6">
               <div className="text-right mt-3">
-                <button
-                  type="button"
-                  onClick={() => alert('Forgot password feature coming soon!')}
+                <Link
+                  to="/forgot-password"
                   className="text-blue-500 text-sm hover:text-blue-700 transition-colors duration-300"
                 >
                   Forgot your password?
-                </button>
+                </Link>
               </div>
             </div>
             
             <button
               type="submit"
-              className="w-full py-4 bg-blue-500 text-white border-none rounded-xl text-base font-semibold cursor-pointer transition-all duration-300 my-2 shadow-lg shadow-blue-200 hover:bg-blue-600 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-300 active:translate-y-0"
+              disabled={loading}
+              className="w-full py-4 bg-blue-500 text-white border-none rounded-xl text-base font-semibold cursor-pointer transition-all duration-300 my-2 shadow-lg shadow-blue-200 hover:bg-blue-600 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-300 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:transform-none"
             >
-              Login
+              {loading ? 'Signing in...' : 'Login'}
             </button>
           </form>
           
@@ -136,8 +177,9 @@ const TickitzLogin = () => {
           
           <div className="flex gap-4">
             <button
-              onClick={() => alert('Google login coming soon!')}
+              onClick={() => toast('Google login coming soon!')}
               className="flex-1 py-3 px-4 border-2 border-gray-200 rounded-xl bg-white text-gray-600 text-sm font-medium cursor-pointer transition-all duration-300 flex items-center justify-center gap-2 hover:border-red-500 hover:text-red-500 hover:-translate-y-1 hover:shadow-md"
+              disabled={loading}
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24">
                 <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -148,8 +190,9 @@ const TickitzLogin = () => {
               Google
             </button>
             <button
-              onClick={() => alert('Facebook login coming soon!')}
+              onClick={() => toast('Facebook login coming soon!')}
               className="flex-1 py-3 px-4 border-2 border-gray-200 rounded-xl bg-white text-gray-600 text-sm font-medium cursor-pointer transition-all duration-300 flex items-center justify-center gap-2 hover:border-blue-600 hover:text-blue-600 hover:-translate-y-1 hover:shadow-md"
+              disabled={loading}
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24">
                 <path fill="currentColor" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
