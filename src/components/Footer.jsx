@@ -38,13 +38,13 @@ const Footer = () => {
           <h3 className="text-lg mb-5 text-gray-900">Our Sponsor</h3>
           <div className="flex flex-col gap-4">
             <div className="h-8 mb-2">
-              <img src="/public/ebv.id 2.svg" alt="Ebv.id" className="h-full object-contain" />
+              <img src="/ebv.id 2.svg" alt="Ebv.id" className="h-full object-contain" />
             </div>
             <div className="h-8 mb-2">
-              <img src="/public/CineOne21 2.svg" alt="CineOne21" className="h-full object-contain" />
+              <img src="/CineOne21 2.svg" alt="CineOne21" className="h-full object-contain" />
             </div>
             <div className="h-8 mb-2">
-              <img src="/public/hiflix 2.svg" alt="Hiflix" className="h-full object-contain" />
+              <img src="/hiflix 2.svg" alt="Hiflix" className="h-full object-contain" />
             </div>
           </div>
         </section>
