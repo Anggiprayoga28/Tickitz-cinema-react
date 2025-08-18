@@ -1,402 +1,349 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import MovieCard from '../components/MovieCard'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchMovies, fetchUpcoming } from '../redux/slice/movieSlice'
 
-const TickitzHomepage = () => {
-  const [formData, setFormData] = useState({
-    firstName: "",
-    email: "",
-  });
+const SealIcon = () => (
+	<svg
+		className="w-6 h-6 text-blue-600"
+		fill="currentColor"
+		viewBox="0 0 20 20"
+	>
+		<path
+			fillRule="evenodd"
+			d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+			clipRule="evenodd"
+		/>
+	</svg>
+)
 
-  const handleNewsletterSubmit = (e) => {
-    e.preventDefault();
-    if (formData.firstName && formData.email) {
-      alert(
-        `Subscription successful for ${formData.firstName} (${formData.email})`
-      );
-      setFormData({ firstName: "", email: "" });
-    } else {
-      alert("Please fill in all fields");
-    }
-  };
+const DollarIcon = () => (
+	<svg
+		className="w-6 h-6 text-blue-600"
+		fill="none"
+		stroke="currentColor"
+		viewBox="0 0 24 24"
+	>
+		<path
+			strokeLinecap="round"
+			strokeLinejoin="round"
+			strokeWidth="2"
+			d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+		/>
+	</svg>
+)
 
-  const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
- 
+const SupportIcon = () => (
+	<svg
+		className="w-6 h-6 text-blue-600"
+		fill="none"
+		stroke="currentColor"
+		viewBox="0 0 24 24"
+	>
+		<path
+			strokeLinecap="round"
+			strokeLinejoin="round"
+			strokeWidth="2"
+			d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 12l.01.01M12 12l.01.01m-.01-.01l.01.01m-.01-.01L12 12l.01.01M12 12l.01.01"
+		/>
+	</svg>
+)
 
-  // Movie data with IDs for navigation
-  const currentMovies = [
-    {
-      id: 1,
-      title: "Black Widow",
-      genres: ["Action", "Adventure"],
-      image: "/black-widow.png",
-      recommended: false,
-    },
-    {
-      id: 2,
-      title: "The Witches",
-      genres: ["Comedy", "Adventure"],
-      image: "/witches.png",
-      recommended: true,
-    },
-    {
-      id: 3,
-      title: "Tenet",
-      genres: ["Action", "Sci-Fi"],
-      image: "/tenet.png",
-      recommended: true,
-    },
-    {
-      id: 4,
-      title: "Spiderman",
-      genres: ["Action", "Adventure"],
-      image: "/spiderposter.svg",
-      recommended: false,
-    },
-  ];
+const LandingPage = () => {
+	const dispatch = useDispatch()
 
-  const upcomingMovies = [
-    {
-      id: 5,
-      title: "Black Widow",
-      date: "December 2024",
-      genres: ["Action", "Adventure"],
-      image: "/black-widow.png",
-    },
-    {
-      id: 6,
-      title: "The Witches",
-      date: "January 2025",
-      genres: ["Comedy", "Adventure"],
-      image: "/witches.png",
-    },
-    {
-      id: 7,
-      title: "Tenet",
-      date: "June 2025",
-      genres: ["Action", "Sci-Fi"],
-      image: "/tenet.png",
-    },
-    {
-      id: 8,
-      title: "Spiderman",
-      date: "March 2025",
-      genres: ["Action", "Adventure"],
-      image: "/spiderposter.svg",
-    },
-  ];
+	// Selector untuk mengambil data dari Redux state
+	const { popular, upcoming, genreMap, loading, error } = useSelector(
+		(state) => state.movies
+	)
 
-  const features = [
-    {
-      title: "Guaranteed",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipis elit. Sit enim nec, proin faucibus nibh et sagittis a.",
-      icon: (
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          className="text-blue-600"
-        >
-          <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M11.7281 21.9137C11.8388 21.9715 11.9627 22.0009 12.0865 22C12.2103 21.999 12.3331 21.9686 12.4449 21.9097L16.0128 20.0025C17.0245 19.4631 17.8168 18.8601 18.435 18.1579C19.779 16.6282 20.5129 14.6758 20.4998 12.6626L20.4575 6.02198C20.4535 5.25711 19.9511 4.57461 19.2082 4.32652L12.5707 2.09956C12.1711 1.96424 11.7331 1.96718 11.3405 2.10643L4.72824 4.41281C3.9893 4.67071 3.496 5.35811 3.50002 6.12397L3.54231 12.7597C3.5554 14.7758 4.31448 16.7194 5.68062 18.2335C6.3048 18.9258 7.10415 19.52 8.12699 20.0505L11.7281 21.9137ZM10.7836 14.1089C10.9326 14.2521 11.1259 14.3227 11.3192 14.3207C11.5125 14.3198 11.7047 14.2472 11.8517 14.1021L15.7508 10.2581C16.0438 9.96882 16.0408 9.50401 15.7448 9.21866C15.4478 8.9333 14.9696 8.93526 14.6766 9.22454L11.3081 12.5449L9.92885 11.2191C9.63186 10.9337 9.15467 10.9367 8.8607 11.226C8.56774 11.5152 8.57076 11.98 8.86775 12.2654L10.7836 14.1089Z"
-            fill="currentColor"
-          />
-        </svg>
-      ),
-    },
-    {
-      title: "Affordable",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipis elit. Sit enim nec, proin faucibus nibh et sagittis a.",
-      icon: (
-        <svg
-          width="22"
-          height="21"
-          viewBox="0 0 22 21"
-          fill="none"
-          className="text-blue-600"
-        >
-          <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M11.2002 21C16.9992 21 21.7002 16.299 21.7002 10.5C21.7002 4.70101 16.9992 0 11.2002 0C5.4012 0 0.700195 4.70101 0.700195 10.5C0.700195 16.299 5.4012 21 11.2002 21ZM16.1618 8.24293C16.5463 7.85852 16.5463 7.23523 16.1618 6.85082C15.7774 6.4664 15.1542 6.4664 14.7698 6.85082L9.55957 12.061L7.63063 10.1321C7.24621 9.74765 6.62293 9.74765 6.23851 10.1321C5.85409 10.5165 5.85409 11.1398 6.23851 11.5242L8.86351 14.1491C9.24793 14.5336 9.87121 14.5336 10.2556 14.1491L16.1618 8.24293Z"
-            fill="currentColor"
-          />
-        </svg>
-      ),
-    },
-    {
-      title: "24/7 Customer Support",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipis elit. Sit enim nec, proin faucibus nibh et sagittis a.",
-      icon: (
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          className="text-blue-600"
-        >
-          <path
-            d="M7.5 4C6.1 4 5 5.0438 5 6.3195V16.2362L7.7878 13.757H16.1511C17.5399 13.757 18.6762 12.7132 18.6762 11.4375V6.3195C18.6762 5.0438 17.5399 4 16.1511 4H7.5ZM19.2014 9.7986V11.4375C19.2014 13.9959 16.9363 16.0764 16.1511 16.0764H10.5755V16.2362C10.5755 17.5119 11.7119 18.5556 13.1007 18.5556H20.464L22.2518 20.0348V12.1181C22.2518 10.8424 21.1154 9.7986 19.7266 9.7986H19.2014Z"
-            fill="currentColor"
-          />
-        </svg>
-      ),
-    },
-  ];
-  
+	// Convert genreMap array back to Map
+	const genreMapObj = new Map(genreMap)
 
-  const SectionBadge = ({ children }) => (
-    <div className="inline-block bg-blue-600 text-white px-4 py-2 rounded-full text-xs font-bold mb-6">
-      {children}
-    </div>
-  );
+	useEffect(() => {
+		dispatch(fetchMovies())
+		dispatch(fetchUpcoming())
+	}, [dispatch])
 
-  const SectionTitle = ({ children, className = "" }) => (
-    <h2
-      className={`text-3xl lg:text-4xl font-bold text-gray-900 mb-8 ${className}`}
-    >
-      {children}
-    </h2>
-  );
+	// Loading state
+	if (loading.popular && popular.results.length === 0) {
+		return (
+			<div className="flex justify-center items-center min-h-screen">
+				<div className="text-xl">Loading...</div>
+			</div>
+		)
+	}
 
-  const MovieCard = ({ movie, showOverlay = false, showDate = false }) => (
-    <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 group relative">
-      {movie.recommended && (
-        <div className="absolute top-3 right-3 bg-blue-600 text-white px-2 py-1 rounded text-xs font-bold z-10">
-          Recommended
-        </div>
-      )}
+	// Error state
+	if (error) {
+		return (
+			<div className="flex justify-center items-center min-h-screen">
+				<div className="text-xl text-red-500">Error: {error}</div>
+			</div>
+		)
+	}
 
-      <div className="relative overflow-hidden">
-        <img
-          src={movie.image}
-          alt={movie.title}
-          className="w-full h-72 object-cover"
-        />
-        {showOverlay && (
-          <div className="absolute inset-0 bg-black bg-opacity-80 flex flex-col justify-center items-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <Link
-              to={`/movie/${movie.id}`}
-              className="bg-transparent border border-white text-white px-5 py-2 rounded hover:bg-white hover:text-gray-900 transition-colors"
-            >
-              Details
-            </Link>
-            <Link
-              to={`/movie/${movie.id}`}
-              className="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700 transition-colors"
-            >
-              Buy Ticket
-            </Link>
-          </div>
-        )}
-      </div>
+	const popularMovies = popular.results || []
+	const upcomingMovies = upcoming.results || []
 
-      <div className="p-5">
-        <h3 className="text-lg font-bold text-gray-900 mb-2">{movie.title}</h3>
-        {showDate && (
-          <p className="text-blue-600 font-bold mb-3">{movie.date}</p>
-        )}
-        <div className="flex flex-wrap gap-2">
-          {movie.genres.map((genre, i) => (
-            <span
-              key={i}
-              className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs"
-            >
-              {genre}
-            </span>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+	return (
+		<main className={`font-sans px-4 py-8 md:px-8 lg:px-16 xl:px-32`}>
+			{/* Hero Section */}
+			<section className="flex flex-col lg:flex-row items-center gap-8 py-12">
+				<div className="w-full lg:w-3/5 space-y-4">
+					<h1 className="text-lg md:text-xl font-semibold text-blue-600">
+						MOVIE TICKET PURCHASE #1
+					</h1>
+					<h2 className="text-2xl md:text-3xl lg:text-5xl font-bold text-gray-800 lg:py-8">
+						Experience the Magic of Cinema: Book Your Tickets Today
+					</h2>
+					<p className="text-gray-600 text-lg">
+						Sign up and get the ticket with a lot of discount
+					</p>
+				</div>
 
-  const FeatureCard = ({ feature }) => (
-    <div className="text-center">
-      <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-        {feature.icon}
-      </div>
-      <h3 className="text-xl font-bold text-gray-900 mb-4">{feature.title}</h3>
-      <p className="text-gray-600 leading-relaxed">{feature.description}</p>
-    </div>
-  );
+				<div className="w-full max-w-129 mt-8 lg:w-2/5 lg:mt-0 lg:max-w-[40%] grid grid-cols-2 gap-4">
+					<div className="space-y-4">
+						<img
+							className="w-full h-auto aspect-[4/3] object-cover rounded-t-3xl shadow-lg"
+							src={
+								popularMovies[0]?.poster_path
+									? `https://image.tmdb.org/t/p/w500${popularMovies[0].poster_path}`
+									: 'https://i.pinimg.com/736x/7b/fd/48/7bfd489f68437bcb0c4f71e70316a603.jpg'
+							}
+							alt="Movie scene 1"
+						/>
+						<img
+							className="w-full h-auto aspect-[3.7/4] object-cover rounded-b-3xl shadow-lg"
+							src={
+								popularMovies[2]?.poster_path
+									? `https://image.tmdb.org/t/p/w500${popularMovies[2].poster_path}`
+									: 'https://i.pinimg.com/736x/7b/fd/48/7bfd489f68437bcb0c4f71e70316a603.jpg'
+							}
+							alt="Movie scene 3"
+						/>
+					</div>
+					<div className="space-y-4">
+						<img
+							className="w-full h-auto aspect-[3.7/4] object-cover rounded-t-3xl shadow-lg"
+							src={
+								popularMovies[1]?.poster_path
+									? `https://image.tmdb.org/t/p/w500${popularMovies[1].poster_path}`
+									: 'https://i.pinimg.com/736x/7b/fd/48/7bfd489f68437bcb0c4f71e70316a603.jpg'
+							}
+							alt="Movie scene 2"
+						/>
+						<img
+							className="w-full h-auto aspect-[4/3] object-cover rounded-b-3xl shadow-lg"
+							src={
+								popularMovies[3]?.poster_path
+									? `https://image.tmdb.org/t/p/w500${popularMovies[3].poster_path}`
+									: 'https://i.pinimg.com/736x/7b/fd/48/7bfd489f68437bcb0c4f71e70316a603.jpg'
+							}
+							alt="Movie scene 4"
+						/>
+					</div>
+				</div>
+			</section>
 
-  return (
-    <div className="min-h-screen bg-blue-50 font-sans">
-      <main className="max-w-6xl mx-auto px-5 py-10 space-y-20">
-        {/* Hero Section */}
-        <section className="flex flex-col lg:flex-row items-center gap-10">
-          <div className="flex-1 text-center lg:text-left">
-            <SectionBadge>MOVIE TICKET PURCHASES #1 IN INDONESIA</SectionBadge>
-            <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
-              Experience the Magic of Cinema: Book Your Tickets Today
-            </h1>
-            <p className="text-gray-600 text-lg mb-8">
-              Sign up and get the ticket with a lot of discount
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Link
-                to="/register"
-                className="bg-blue-600 text-white px-8 py-4 rounded-lg font-bold hover:bg-blue-700 transition-colors"
-              >
-                Sign Up Now
-              </Link>
-              <Link
-                to="/movies"
-                className="bg-transparent border border-blue-600 text-blue-600 px-8 py-4 rounded-lg font-bold hover:bg-blue-600 hover:text-white transition-colors"
-              >
-                Browse Movies
-              </Link>
-            </div>
-          </div>
+			{/* Why Choose Us Section */}
+			<section className="py-16 bg-white">
+				<div className="text-center mb-12">
+					<h2 className="text-blue-600 font-semibold mb-2">
+						WHY CHOOSE US
+					</h2>
+					<h3 className="text-2xl md:text-3xl lg:text-4xl font-bold">
+						Unleashing the Ultimate Movie Experience
+					</h3>
+				</div>
 
-          <div className="flex-1 grid grid-cols-2 gap-4 max-w-sm">
-            <div className="rounded-lg overflow-hidden shadow-lg">
-              <img
-                src="/rectangle.png"
-                alt="Movie 1"
-                className="w-full h-36 object-cover"
-              />
-            </div>
-            <div className="rounded-lg overflow-hidden shadow-lg row-span-2">
-              <img
-                src="/lion-king.png"
-                alt="Lion King"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="rounded-lg overflow-hidden shadow-lg row-span-2">
-              <img
-                src="/spiderposter.svg"
-                alt="Spider-Man"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="rounded-lg overflow-hidden shadow-lg">
-              <img
-                src="/roblox.jpg"
-                alt="Roblox"
-                className="w-full h-36 object-cover"
-              />
-            </div>
-          </div>
-        </section>
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+					<div>
+						<div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+							<SealIcon />
+						</div>
+						<h4 className="text-xl font-semibold mb-2">
+							Guaranteed
+						</h4>
+						<p className="text-gray-600">
+							Lorem ipsum, dolor sit amet consectetur adipisicing
+							elit. Officia voluptatem quisquam rem iste a dicta
+							sed ut, ullam, dolores natus obcaecati.
+						</p>
+					</div>
 
-        {/* Features Section */}
-        <section>
-          <div className="text-center mb-12">
-            <SectionBadge>WHY CHOOSE US</SectionBadge>
-            <SectionTitle>
-              Unleashing the Ultimate Movie Experience
-            </SectionTitle>
-          </div>
+					<div>
+						<div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+							<DollarIcon />
+						</div>
+						<h4 className="text-xl font-semibold mb-2">
+							Affordable
+						</h4>
+						<p className="text-gray-600">
+							Lorem ipsum, dolor sit amet consectetur adipisicing
+							elit. Officia voluptatem quisquam rem iste a dicta
+							sed ut, ullam, dolores natus obcaecati.
+						</p>
+					</div>
 
-          <div className="grid md:grid-cols-3 gap-10">
-            {features.map((feature, index) => (
-              <FeatureCard key={index} feature={feature} />
-            ))}
-          </div>
-        </section>
+					<div>
+						<div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+							<SupportIcon />
+						</div>
+						<h4 className="text-xl font-semibold mb-2">
+							24/7 customer support
+						</h4>
+						<p className="text-gray-600">
+							Lorem ipsum, dolor sit amet consectetur adipisicing
+							elit. Officia voluptatem quisquam rem iste a dicta
+							sed ut, ullam, dolores natus obcaecati.
+						</p>
+					</div>
+				</div>
+			</section>
 
-        {/* Current Movies Section */}
-        <section>
-          <div className="text-center mb-12">
-            <SectionBadge>MOVIES</SectionBadge>
-            <SectionTitle>
-              Exciting Movies That Should Be Watched Today
-            </SectionTitle>
-          </div>
+			{/* Popular Movies Section */}
+			<section className="py-12 bg-gray-50">
+				<div className="text-center mb-12">
+					<h2 className="text-blue-600 font-semibold mb-2">MOVIES</h2>
+					<h3 className="text-2xl md:text-3xl lg:text-4xl font-bold">
+						Exciting Movies That Should Be Watched Today
+					</h3>
+				</div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
-            {currentMovies.map((movie, index) => (
-              <MovieCard key={index} movie={movie} showOverlay={true} />
-            ))}
-          </div>
+				{/* Movie Grid */}
+				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
+					{popularMovies.slice(0, 8).map((movie) => (
+						<MovieCard
+							key={movie.id}
+							movie={movie}
+							genreMap={genreMapObj}
+							untuk="landing"
+						/>
+					))}
+				</div>
 
-          <div className="text-center">
-            <Link
-              to="/movies"
-              className="text-blue-600 font-bold text-lg hover:text-blue-700 transition-colors inline-flex items-center gap-2"
-            >
-              View All
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 8l4 4m0 0l-4 4m4-4H3"
-                />
-              </svg>
-            </Link>
-          </div>
-        </section>
+				<div className="text-center mt-8">
+					<Link
+						to="/movies"
+						className="inline-flex items-center text-blue-700 font-semibold hover:text-blue-900 transition-colors"
+					>
+						View All
+						<svg
+							className="ml-2 w-5 h-5"
+							viewBox="0 0 20 20"
+							fill="none"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path
+								d="M17.5 10L2.5 10"
+								stroke="currentColor"
+								strokeWidth="2"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+							/>
+							<path
+								d="M12.5 5L17.5 10L12.5 15"
+								stroke="currentColor"
+								strokeWidth="2"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+							/>
+						</svg>
+					</Link>
+				</div>
+			</section>
 
-        {/* Upcoming Movies Section */}
-        <section>
-          <div className="text-center mb-12">
-            <SectionBadge>UPCOMING MOVIES</SectionBadge>
-            <SectionTitle>Exciting Movie Coming Soon</SectionTitle>
-          </div>
+			{/* Upcoming Section */}
+			<section className="py-16 bg-white">
+				<div className="flex flex-col md:flex-row justify-between items-center mb-12">
+					<div className="mb-6 md:mb-0">
+						<h2 className="text-blue-600 font-semibold mb-2">
+							UPCOMING
+						</h2>
+						<h3 className="text-2xl md:text-3xl lg:text-4xl font-bold">
+							Exciting Movies Coming Soon
+						</h3>
+					</div>
+				</div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {upcomingMovies.map((movie, index) => (
-              <MovieCard key={index} movie={movie} showDate={true} />
-            ))}
-          </div>
-        </section>
+				{/* Upcoming Movies Grid */}
+				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
+					{upcomingMovies.slice(0, 8).map((movie) => (
+						<MovieCard
+							key={movie.id}
+							movie={movie}
+							genreMap={genreMapObj}
+							untuk="landing"
+						/>
+					))}
+				</div>
 
-        {/* Newsletter Section */}
-        <section className="bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl p-12 text-center text-white">
-          <h2 className="text-3xl font-bold mb-8">
-            Subscribe to our newsletter
-          </h2>
-          <form
-            className="flex flex-col max-w-md mx-auto gap-4"
-            onSubmit={handleNewsletterSubmit}
-          >
-            <input
-              type="text"
-              name="firstName"
-              value={formData.firstName}
-              onChange={handleInputChange}
-              className="px-4 py-4 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
-              placeholder="First name"
-              required
-            />
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              className="px-4 py-4 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
-              placeholder="Email address"
-              required
-            />
-            <button
-              type="submit"
-              className="bg-white text-blue-600 px-4 py-4 rounded-lg font-bold hover:bg-gray-100 transition-colors"
-            >
-              Subscribe Now
-            </button>
-          </form>
-        </section>
-      </main>
-    </div>
-  );
-};
+				<div className="text-center mt-8">
+					<Link
+						to="/movies"
+						className="inline-flex items-center text-blue-700 font-semibold hover:text-blue-900 transition-colors"
+					>
+						View All
+						<svg
+							className="ml-2 w-5 h-5"
+							viewBox="0 0 20 20"
+							fill="none"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path
+								d="M17.5 10L2.5 10"
+								stroke="currentColor"
+								strokeWidth="2"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+							/>
+							<path
+								d="M12.5 5L17.5 10L12.5 15"
+								stroke="currentColor"
+								strokeWidth="2"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+							/>
+						</svg>
+					</Link>
+				</div>
+			</section>
 
-export default TickitzHomepage;
+			{/* Newsletter Section */}
+			<section className="relative my-16 rounded-2xl p-8 pb-16 bg-blue-700 text-white overflow-hidden">
+				<div className="relative z-10 max-w-4xl mx-auto text-center">
+					<h2 className="text-2xl md:text-3xl lg:text-4xl font-light mb-6">
+						Subscribe to our newsletter
+					</h2>
+
+					<form className="flex flex-col sm:flex-row gap-4">
+						<input
+							type="text"
+							placeholder="First Name"
+							className="flex-grow px-4 py-3 rounded-md text-white bg-blue-600 border border-blue-400 focus:outline-none focus:ring-2 focus:ring-white placeholder-blue-200"
+							required
+						/>
+						<input
+							type="email"
+							placeholder="Email Address"
+							className="flex-grow px-4 py-3 rounded-md text-white bg-blue-600 border border-blue-400 focus:outline-none focus:ring-2 focus:ring-white placeholder-blue-200"
+							required
+						/>
+						<button
+							type="submit"
+							className="px-6 py-3 bg-white text-blue-700 hover:bg-blue-50 rounded-md font-semibold transition-colors"
+						>
+							Subscribe Now
+						</button>
+					</form>
+				</div>
+
+				<div className="absolute -right-30 -bottom-50 w-60 h-60 rounded-full border-8 border-white opacity-20"></div>
+			</section>
+		</main>
+	)
+}
+
+export default LandingPage
