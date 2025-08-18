@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Eye, Edit, Trash2, Plus, Search, MapPin, User, Calendar, X, Upload } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const MovieApp = () => {
   const [selectedMonth, setSelectedMonth] = useState('November 2023');
@@ -7,72 +8,8 @@ const MovieApp = () => {
   const [currentView, setCurrentView] = useState('list'); // 'list', 'add', 'edit', 'view'
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [uploadedImage, setUploadedImage] = useState(null);
+  const navigate = useNavigate();
   const [movies, setMovies] = useState([
-    {
-      id: 1,
-      thumbnail: '/public/spiderposter.svg',
-      name: 'Spiderman HomeComing',
-      category: 'Action, Adventure',
-      releaseDate: '07/05/2023',
-      duration: '2 Hours 15 Minute',
-      directorName: 'Jon Watts',
-      cast: 'Tom Holland, Michael Keaton, Robert Downey Jr.',
-      synopsis: 'Thrilled by his experience with the Avengers, Peter returns home, where he lives with his Aunt May, under the watchful eye of his new mentor Tony Stark.',
-      location: 'New York, Los Angeles, Chicago',
-      showTimes: ['08:30am', '10:30pm']
-    },
-    {
-      id: 2,
-      thumbnail: '/public/black-widow.png',
-      name: 'Avengers End Game',
-      category: 'Sci-fi, Adventure',
-      releaseDate: '10/06/2023',
-      duration: '2 Hours 15 Minute',
-      directorName: 'Anthony Russo, Joe Russo',
-      cast: 'Robert Downey Jr., Chris Evans, Mark Ruffalo',
-      synopsis: 'After the devastating events of Avengers: Infinity War, the universe is in ruins. With the help of remaining allies, the Avengers assemble once more.',
-      location: 'New York, Los Angeles, Chicago',
-      showTimes: ['09:00am', '12:00pm', '15:00pm']
-    },
-    {
-      id: 3,
-      thumbnail: '/public/spiderposter.svg',
-      name: 'Spiderman HomeComing',
-      category: 'Action, Adventure',
-      releaseDate: '02/03/2023',
-      duration: '2 Hours 15 Minute',
-      directorName: 'Jon Watts',
-      cast: 'Tom Holland, Michael Keaton, Robert Downey Jr.',
-      synopsis: 'Thrilled by his experience with the Avengers, Peter returns home, where he lives with his Aunt May, under the watchful eye of his new mentor Tony Stark.',
-      location: 'Purwokerto, Bandung, Bekasi',
-      showTimes: ['08:30am', '10:30pm']
-    },
-    {
-      id: 4,
-      thumbnail: '/public/black-widow.png',
-      name: 'Avengers End Game',
-      category: 'Sci-fi, Adventure',
-      releaseDate: '01/09/2023',
-      duration: '2 Hours 15 Minute',
-      directorName: 'Anthony Russo, Joe Russo',
-      cast: 'Robert Downey Jr., Chris Evans, Mark Ruffalo',
-      synopsis: 'After the devastating events of Avengers: Infinity War, the universe is in ruins. With the help of remaining allies, the Avengers assemble once more.',
-      location: 'Jakarta, Surabaya, Medan',
-      showTimes: ['09:00am', '12:00pm', '15:00pm']
-    },
-    {
-      id: 5,
-      thumbnail: '/public/spiderposter.svg',
-      name: 'Spiderman HomeComing',
-      category: 'Action, Adventure',
-      releaseDate: '07/08/2023',
-      duration: '2 Hours 15 Minute',
-      directorName: 'Jon Watts',
-      cast: 'Tom Holland, Michael Keaton, Robert Downey Jr.',
-      synopsis: 'Thrilled by his experience with the Avengers, Peter returns home, where he lives with his Aunt May, under the watchful eye of his new mentor Tony Stark.',
-      location: 'Bandung, Yogyakarta, Solo',
-      showTimes: ['08:30am', '10:30pm']
-    }
   ]);
 
   const [movieForm, setMovieForm] = useState({
@@ -289,7 +226,7 @@ const MovieApp = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               <div className="flex items-center">
-                <img src="/public/tickitz-blu.svg" alt="" />
+                <img src="/tickitz-blu.svg" alt="" />
               </div>
               <nav className="hidden md:flex space-x-8">
                 <button 
@@ -424,7 +361,7 @@ const MovieApp = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               <div className="flex items-center">
-                <img src="/public/tickitz-blu.svg" alt="" />
+                <img src="/tickitz-blu.svg" alt="" />
               </div>
               <nav className="hidden md:flex space-x-8">
                 <button 
@@ -717,42 +654,6 @@ const MovieApp = () => {
   // Main List View
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            <div className="flex items-center">
-              <img src="/public/tickitz-blu.svg" alt="" />
-            </div>
-
-            {/* Navigation */}
-            <nav className="hidden md:flex space-x-8">
-              <a href="#" className="text-gray-600 hover:text-blue-600 px-3 py-2 font-medium">
-                Dashboard
-              </a>
-              <a href="#" className="text-blue-600 border-b-2 border-blue-600 px-3 py-2 font-medium">
-                Movie
-              </a>
-            </nav>
-
-            {/* Right side */}
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2 text-gray-600">
-                <MapPin size={18} />
-                <span className="text-sm">Location</span>
-              </div>
-              <button className="p-2 text-gray-600 hover:text-blue-600">
-                <Search size={20} />
-              </button>
-              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                <User size={18} className="text-white" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
-
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
@@ -777,7 +678,7 @@ const MovieApp = () => {
                 resetForm();
                 setCurrentView('add');
               }}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center gap-2 transition-colors"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md flex items-center gap-2 transition-colors"
             >
               <Plus size={18} />
               Add Movies
